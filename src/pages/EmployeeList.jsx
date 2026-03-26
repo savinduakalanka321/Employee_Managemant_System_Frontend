@@ -8,6 +8,7 @@ const EmployeeList = () => {
   const [searching, setSearching] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
     let isMounted = true
@@ -146,6 +147,36 @@ const EmployeeList = () => {
     }
   }
 
+  const handleDelete = async (employeeId) => {
+    if (!employeeId) {
+      return
+    }
+
+    const confirmed = window.confirm('Are you sure you want to delete this employee?')
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingId(employeeId)
+    setError('')
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/employee/delete/${employeeId}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || 'Failed to delete employee.')
+      }
+
+      setEmployees((prev) => prev.filter((employee) => employee.id !== employeeId))
+    } catch (err) {
+      setError(err?.message || 'Something went wrong. Please try again.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6" id="employee-list">
       <div className="rounded-3xl border border-slate-200 bg-white/85 p-8 shadow-sm">
@@ -229,13 +260,23 @@ const EmployeeList = () => {
                       {employee.salary}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => startEdit(employee)}
-                        className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-                      >
-                        Edit
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => startEdit(employee)}
+                          className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(employee.id)}
+                          disabled={deletingId === employee.id}
+                          className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600 transition hover:border-rose-300 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {deletingId === employee.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
