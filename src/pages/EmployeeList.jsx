@@ -6,6 +6,8 @@ const EmployeeList = () => {
   const [error, setError] = useState('')
   const [searchId, setSearchId] = useState('')
   const [searching, setSearching] = useState(false)
+  const [editingEmployee, setEditingEmployee] = useState(null)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -89,6 +91,61 @@ const EmployeeList = () => {
       })
   }
 
+  const startEdit = (employee) => {
+    setEditingEmployee({
+      id: employee.id,
+      name: employee.name || '',
+      email: employee.email || '',
+      department: employee.department || '',
+      salary: employee.salary ?? '',
+    })
+    setError('')
+  }
+
+  const handleEditChange = (event) => {
+    const { name, value } = event.target
+    setEditingEmployee((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleUpdate = async (event) => {
+    event.preventDefault()
+    if (!editingEmployee?.id) {
+      return
+    }
+
+    setSaving(true)
+    setError('')
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/employee/update/${editingEmployee.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: editingEmployee.name,
+            email: editingEmployee.email,
+            department: editingEmployee.department,
+            salary: Number(editingEmployee.salary),
+          }),
+        },
+      )
+
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || 'Failed to update employee.')
+      }
+
+      const updated = await response.json()
+      setEmployees((prev) => prev.map((emp) => (emp.id === updated.id ? updated : emp)))
+      setEditingEmployee(null)
+    } catch (err) {
+      setError(err?.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6" id="employee-list">
       <div className="rounded-3xl border border-slate-200 bg-white/85 p-8 shadow-sm">
@@ -159,6 +216,7 @@ const EmployeeList = () => {
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Department</th>
                   <th className="px-4 py-3 text-right">Salary</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -170,11 +228,92 @@ const EmployeeList = () => {
                     <td className="px-4 py-3 text-right text-slate-600">
                       {employee.salary}
                     </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(employee)}
+                        className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                      >
+                        Edit
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        )}
+
+        {editingEmployee && (
+          <form onSubmit={handleUpdate} className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Update Employee</p>
+                <p className="mt-1 text-sm text-slate-600">Editing ID: {editingEmployee.id}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingEmployee(null)}
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="text-sm font-medium text-slate-700">
+                Name
+                <input
+                  type="text"
+                  name="name"
+                  value={editingEmployee.name}
+                  onChange={handleEditChange}
+                  required
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
+                />
+              </label>
+              <label className="text-sm font-medium text-slate-700">
+                Email
+                <input
+                  type="email"
+                  name="email"
+                  value={editingEmployee.email}
+                  onChange={handleEditChange}
+                  required
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
+                />
+              </label>
+              <label className="text-sm font-medium text-slate-700">
+                Department
+                <input
+                  type="text"
+                  name="department"
+                  value={editingEmployee.department}
+                  onChange={handleEditChange}
+                  required
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
+                />
+              </label>
+              <label className="text-sm font-medium text-slate-700">
+                Salary
+                <input
+                  type="number"
+                  name="salary"
+                  value={editingEmployee.salary}
+                  onChange={handleEditChange}
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
+                />
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {saving ? 'Updating...' : 'Update Employee'}
+            </button>
+          </form>
         )}
       </div>
     </section>
