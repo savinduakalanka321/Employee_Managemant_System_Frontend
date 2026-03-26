@@ -2,6 +2,10 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap");
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
     color: #0f172a;
@@ -12,5 +16,9 @@
   h2,
   h3 {
     font-family: "Space Grotesk", "IBM Plex Sans", sans-serif;
+  }
+
+  section[id] {
+    scroll-margin-top: 96px;
   }
 }

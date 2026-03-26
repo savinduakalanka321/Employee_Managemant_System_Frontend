@@ -24,16 +24,16 @@ const Footer = () => {
             <div className="space-y-3">
               <p className="text-sm font-semibold text-slate-900">Product</p>
               <div className="flex flex-col gap-2 text-sm text-slate-600">
-                <a className="transition hover:text-slate-900" href="#">Dashboard</a>
-                <a className="transition hover:text-slate-900" href="#">Employees</a>
-                <a className="transition hover:text-slate-900" href="#">Attendance</a>
+                <a className="transition hover:text-slate-900" href="#dashboard">Dashboard</a>
+                <a className="transition hover:text-slate-900" href="#add-employee">Add Employee</a>
+                <a className="transition hover:text-slate-900" href="#employee-list">Employee List</a>
               </div>
             </div>
             <div className="space-y-3">
               <p className="text-sm font-semibold text-slate-900">Resources</p>
               <div className="flex flex-col gap-2 text-sm text-slate-600">
-                <a className="transition hover:text-slate-900" href="#">Departments</a>
-                <a className="transition hover:text-slate-900" href="#">Reports</a>
+                <a className="transition hover:text-slate-900" href="#add-employee">Add Employee</a>
+                <a className="transition hover:text-slate-900" href="#employee-list">Employee List</a>
                 <a className="transition hover:text-slate-900" href="#policies">Policies</a>
               </div>
             </div>

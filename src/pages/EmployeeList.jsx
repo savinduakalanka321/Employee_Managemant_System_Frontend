@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([])
@@ -9,6 +9,27 @@ const EmployeeList = () => {
   const [editingEmployee, setEditingEmployee] = useState(null)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+
+  const { departmentCount, averageSalary } = useMemo(() => {
+    const departments = new Set()
+    let totalSalary = 0
+    let salaryCount = 0
+
+    employees.forEach((employee) => {
+      if (employee.department) {
+        departments.add(employee.department)
+      }
+      if (typeof employee.salary === 'number') {
+        totalSalary += employee.salary
+        salaryCount += 1
+      }
+    })
+
+    return {
+      departmentCount: departments.size,
+      averageSalary: salaryCount ? Math.round(totalSalary / salaryCount) : 0,
+    }
+  }, [employees])
 
   useEffect(() => {
     let isMounted = true
@@ -179,15 +200,15 @@ const EmployeeList = () => {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pb-12 sm:px-6" id="employee-list">
-      <div className="rounded-3xl border border-slate-200 bg-white/85 p-8 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="rounded-[32px] border border-slate-200 bg-white/85 p-8 shadow-sm">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Employees</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Employee List</p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-900">All Employees</h2>
             <p className="mt-2 text-sm text-slate-600">Fetched from /api/employee/all</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
+            <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2">
               <div className="relative">
                 <input
                   type="number"
@@ -196,8 +217,11 @@ const EmployeeList = () => {
                   placeholder="Search ID"
                   value={searchId}
                   onChange={(event) => setSearchId(event.target.value)}
-                  className="w-32 rounded-full border border-slate-200 bg-white py-2 pl-4 pr-3 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
+                  className="w-36 rounded-full border border-slate-200 bg-white py-2 pl-4 pr-10 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-400"
                 />
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                  ID
+                </span>
               </div>
               <button
                 type="submit"
@@ -214,9 +238,21 @@ const EmployeeList = () => {
             >
               Reset
             </button>
-            <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-              Total: <span className="font-semibold text-slate-900">{employees.length}</span>
-            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Total</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900">{employees.length}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Departments</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900">{departmentCount}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Avg Salary</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900">{averageSalary}</p>
           </div>
         </div>
 
@@ -241,7 +277,7 @@ const EmployeeList = () => {
         {!loading && !error && employees.length > 0 && (
           <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Email</th>
@@ -252,7 +288,7 @@ const EmployeeList = () => {
               </thead>
               <tbody>
                 {employees.map((employee) => (
-                  <tr key={employee.id} className="border-t border-slate-200">
+                  <tr key={employee.id} className="border-t border-slate-200 even:bg-slate-50/60">
                     <td className="px-4 py-3 font-medium text-slate-900">{employee.name}</td>
                     <td className="px-4 py-3 text-slate-600">{employee.email}</td>
                     <td className="px-4 py-3 text-slate-600">{employee.department}</td>
