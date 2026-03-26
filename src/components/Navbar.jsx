@@ -4,11 +4,11 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
-    { label: 'Dashboard', href: '#dashboard' },
-    { label: 'Employees', href: '#employees' },
-    { label: 'Departments', href: '#departments' },
-    { label: 'Attendance', href: '#attendance' },
-    { label: 'Reports', href: '#reports' },
+    { label: 'Dashboard', href: '#' },
+    { label: 'Employees', href: '#' },
+    { label: 'Departments', href: '#' },
+    { label: 'Attendance', href: '#' },
+    { label: 'Reports', href: '#' },
   ]
 
   return (
