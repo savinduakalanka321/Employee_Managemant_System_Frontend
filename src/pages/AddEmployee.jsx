@@ -53,7 +53,7 @@ const AddEmployee = () => {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6" id="add-employee">
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-8">
         <div className="rounded-3xl border border-slate-200 bg-white/85 p-8 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Add Employee</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-900">Create a new employee profile</h2>
@@ -128,19 +128,6 @@ const AddEmployee = () => {
               {submitting ? 'Saving...' : 'Add Employee'}
             </button>
           </form>
-        </div>
-
-        <div className="rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Quick Tips</p>
-          <h3 className="mt-2 text-xl font-semibold text-slate-900">Keep records clean</h3>
-          <ul className="mt-4 space-y-3 text-sm text-slate-600">
-            <li>Use official emails and verified phone numbers.</li>
-            <li>Assign departments and roles for accurate reporting.</li>
-            <li>Keep status up-to-date for payroll and attendance.</li>
-          </ul>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            API endpoint: <span className="font-semibold text-slate-900">/api/employee/create</span>
-          </div>
         </div>
       </div>
     </section>
